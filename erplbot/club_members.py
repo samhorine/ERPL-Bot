@@ -109,20 +109,22 @@ class ClubMember:
 
         # Update this member's rolled value
         self.rolled = rolled
-
+        
         # Check if this member was actually fetched from the spreadsheet or not, or if it has a valid row
         if self.row == -1:
             print(f'Tried to update member {self.name} in spreadsheet, but member has no valid row.')
         else:
             # If it does have a valid row
             # This 'range' is just one single cell that represents if this member is in the server or not
-            value_range = f'{sheet_name}!{col}{self.row}:{col}{self.row}'
+            value_range = f'{sheet_name}{col}{self.row}:{col}{self.row}'
             # The new value should be a stringr
             new_value = 'true' if rolled else 'false'
             # We need to do this because this is one row, and one column
             values = [ [ new_value ] ]
             # Set the value in the sheet finally
             google_sheets.set_values(sheetId, value_range, values)
+            print(f'Updated member {self.name} role value in spreadsheet to {new_value}. {value_range}')
+
 
 def get_members_from_spreadsheet(google_sheets, sheetId, value_range):
     """

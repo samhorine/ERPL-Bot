@@ -1,23 +1,13 @@
-
 import discord
+import pickle
 from erplbot.club_members import get_members_from_spreadsheet, Name
 from erplbot.sheets import GoogleSheets, retrieve_credentials
-
-# The bot's Discord Bot token
-BOT_TOKEN = '~~~~'
-
-# The ID of the spreadsheet that contains all of ERPL's current members
-SPREADSHEET_ID = '~~~~'
-
-# These specify when the member's data in the spreadsheet starts and ends
-SHEET_NAME = '~~~~!'
-RANGE_START = 'A2'
-RANGE_END = 'D'
-
-# This is Discord's ID that means the "Member" role
-MEMBER_ROLE_ID = ~~~~
-RECRUIT_ROLE_ID = ~~~~
-
+#try to get variables from pickled config
+try:
+  print('Loading Config')
+  [BOT_TOKEN, SPREADSHEET_ID, SHEET_NAME, RANGE_START, RANGE_END, MEMBER_ROLE_ID, RECRUIT_ROLE_ID] = pickle.load(open ("config.bin", "rb"))
+except:
+  print("An exception occurred while loading config.bin")
 # This variable will store our GoogleSheets instance
 google_sheets = None
 # This one will store our Google API credentials
