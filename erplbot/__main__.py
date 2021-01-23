@@ -3,22 +3,20 @@ import discord
 from erplbot.club_members import get_members_from_spreadsheet, Name
 from erplbot.sheets import GoogleSheets, retrieve_credentials
 
-# NOTE: Use this link to add ERPL Bot to the ERPL Discord
-# https://discord.com/api/oauth2/authorize?client_id=791401092977786883&permissions=8&scope=bot
-
 # The bot's Discord Bot token
-BOT_TOKEN = 'NzkxNDAxMDkyOTc3Nzg2ODgz.X-OntA.iZ6F4sS1ndt6NEACFmgBd3rJUM8'
+BOT_TOKEN = '~~~~'
 
 # The ID of the spreadsheet that contains all of ERPL's current members
-SPREADSHEET_ID = '1v462rOLQhDgFU4bg8VN7LgauLgE1r8kI_jiAPWzq6Eg'
+SPREADSHEET_ID = '~~~~'
 
 # These specify when the member's data in the spreadsheet starts and ends
+SHEET_NAME = '~~~~!'
 RANGE_START = 'A2'
-RANGE_END = 'I'
+RANGE_END = 'D'
 
 # This is Discord's ID that means the "Member" role
-MEMBER_ROLE_ID = 791509013401567244
-RECRUIT_ROLE_ID = 791534387900448789
+MEMBER_ROLE_ID = ~~~~
+RECRUIT_ROLE_ID = ~~~~
 
 # This variable will store our GoogleSheets instance
 google_sheets = None
@@ -44,6 +42,7 @@ class ERPLBot(discord.Client):
         """
         This function runs whenever a new member joins the server
         """
+        print("Member joined")
         # Here we will just call the update_members function
         await self.update_members(member.guild)
 
@@ -51,6 +50,7 @@ class ERPLBot(discord.Client):
         """
         This function runs whenever a new member updates their own profile, like changing their nickname
         """
+        print("Member updated")
         # Here we will just call the update_members function
         await self.update_members(before.guild)
     
@@ -58,11 +58,12 @@ class ERPLBot(discord.Client):
         """
         Updates all members in the ERPL Discord by checking their names, roles, and the spreadsheet
         """
+        print("Updating all members")
         # "Guild" is the internal name for servers. This gets all members currently in the server
         discord_members = await guild.fetch_members().flatten()
 
         # Retrieves all current ERPL members listed in the spreadsheet as ClubMember instances
-        spreadsheet_members = get_members_from_spreadsheet(google_sheets, SPREADSHEET_ID, ':'.join([RANGE_START, RANGE_END]))
+        spreadsheet_members = get_members_from_spreadsheet(google_sheets, SPREADSHEET_ID, SHEET_NAME + ':'.join([RANGE_START, RANGE_END]))
 
         # Loop through each member in the Discord
         for discord_member in discord_members:
@@ -97,7 +98,7 @@ class ERPLBot(discord.Client):
                     print(f'Added member role to {name}')
 
                     # We also need to make sure they are marked as added in the spreadsheet
-                    member.update_in_server(google_sheets, SPREADSHEET_ID, RANGE_END, True)
+                    member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, True)
 
 def main():
     """

@@ -48,26 +48,16 @@ class ClubMember:
     """
     def __init__(self,
                 row = -1,
-                number = 0,
-                status = None,
-                date_submitted = None,
-                order_summary = None,
+                date = None,
                 name = None,
-                email = None,
-                option = None,
-                in_server = False):
+                rolled = False):
         """
         Creates a new instance of ClubMember.
         """
         self.row = row
-        self.number = number
-        self.status = status
-        self.date_submitted = date_submitted
-        self.order_summary = order_summary
+        self.date = date
         self.name = name
-        self.email = email
-        self.option = option
-        self.in_server = in_server
+        self.rolled = rolled
     
     @staticmethod
     def from_list(member_list, row = -1):
@@ -76,14 +66,9 @@ class ClubMember:
         Also set's this member's row to the row provided, default -1.
 
         The list's indexes must contain data as follows:
-        0           Member #
-        1           Status
-        2           Date Submitted
-        3           Order Summary
-        4           Name
-        5           Email
-        6           Option
-        7           In Server
+        0           Date
+        1           Name
+        2           Rolled
         """
         # Create a completely unpopulated ClubMember so everything is default
         club_member = ClubMember()
@@ -97,19 +82,13 @@ class ClubMember:
             list_iter = iter(member_list)
 
             # Populate all of the fields in order
-            club_member.number = next(list_iter)
-            club_member.status = next(list_iter)
-            club_member.date_submitted = next(list_iter)
-            club_member.order_summary = next(list_iter)
-
+            club_member.date = next(list_iter)
             first_name = next(list_iter)
             last_name = next(list_iter)
 
             # Create a new name object
             club_member.name = Name(first=first_name,last=last_name)
-            club_member.email = next(list_iter)
-            club_member.option = next(list_iter)
-            club_member.in_server = next(list_iter)
+            club_member.rolled = next(list_iter)
 
         # If we reached the end of the list before we were meant to
         except StopIteration:
@@ -117,19 +96,19 @@ class ClubMember:
             # We should check if any field other than the last one is empty though
             if club_member.option is None:
                 # Then print an error message
-                print('Created member lacks 2 or more values')
+                print('Created member lacks values')
         
         # If we have reached the end, then return the new club member
         return club_member
     
-    def update_in_server(self, google_sheets: GoogleSheets, sheetId: str, col: str, in_server: bool):
+    def update_rolled(self, google_sheets: GoogleSheets, sheetId: str, sheet_name: str, col: str, rolled: bool):
         """
-        Sets this member's in_server parameter to the value given
+        Sets this member's rolled parameter to the value given
         Also updates this member in the Google Sheet provided
         """
 
-        # Update this member's in_server value
-        self.in_server = in_server
+        # Update this member's rolled value
+        self.rolled = rolled
 
         # Check if this member was actually fetched from the spreadsheet or not, or if it has a valid row
         if self.row == -1:
@@ -137,9 +116,9 @@ class ClubMember:
         else:
             # If it does have a valid row
             # This 'range' is just one single cell that represents if this member is in the server or not
-            value_range = f'{col}{self.row}:{col}{self.row}'
+            value_range = f'{sheet_name}!{col}{self.row}:{col}{self.row}'
             # The new value should be a stringr
-            new_value = 'true' if in_server else 'false'
+            new_value = 'true' if rolled else 'false'
             # We need to do this because this is one row, and one column
             values = [ [ new_value ] ]
             # Set the value in the sheet finally

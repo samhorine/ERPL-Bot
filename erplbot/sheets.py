@@ -8,7 +8,7 @@ from google.auth.transport.requests import Request
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 AUTH_FILE = 'auth.bin'
-SECRETS_FILE = 'secrets.json'
+SECRETS_FILE = 'secret.json'
 
 class GoogleSheets:
     """
