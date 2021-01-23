@@ -94,7 +94,7 @@ class ClubMember:
         except StopIteration:
             # Everything should be fine, if the last column wasn't filled in, then it is false
             # We should check if any field other than the last one is empty though
-            if club_member.option is None:
+            if club_member.date is None:
                 # Then print an error message
                 print('Created member lacks values')
         
