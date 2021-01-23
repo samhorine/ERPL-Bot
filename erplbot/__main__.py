@@ -26,6 +26,8 @@ class ERPLBot(discord.Client):
         # Let's connect to Google's API now
         google_sheets = GoogleSheets(creds)
 
+        #Change status
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='4 New Members'))
         print("Bot initialized")
     
     async def on_member_join(self, member):
