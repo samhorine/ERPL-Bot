@@ -110,7 +110,7 @@ class ERPLBot(discord.Client):
                         print(f'Added member role to {name}')
 
                         # Send a DM confirming the membership
-                        await member.dm_channel.send(f'Hello {name}, you have been given membership!')
+                        await discord_member.dm_channel.send(f'Hello {name}, you have been given membership!')
                     else:
                         print(f'Name Taken: {name}')
 def main():
