@@ -89,9 +89,9 @@ class ClubMember:
             # Create a new name object
             club_member.name = Name(first=first_name,last=last_name)
             rolled_str = next(list_iter)
-            
-            # Sets club_member.rolled bool
-            club_member.rolled = rolled_str.lower() == rolled_str
+
+            # Sets club_member.rolled bool... (in because sheets is cursed and has 'true & TRUE)
+            club_member.rolled = 'true' in rolled_str.lower()
 
         # If we reached the end of the list before we were meant to
         except StopIteration:
@@ -121,7 +121,7 @@ class ClubMember:
             # This 'range' is just one single cell that represents if this member is in the server or not
             value_range = f'{sheet_name}{col}{self.row}:{col}{self.row}'
             # The new value should be a stringr
-            new_value = 'true' if rolled else 'false'
+            new_value = 'TRUE' if rolled else 'FALSE'
             # We need to do this because this is one row, and one column
             values = [ [ new_value ] ]
             # Set the value in the sheet finally

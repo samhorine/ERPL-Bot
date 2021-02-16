@@ -27,6 +27,7 @@ class ERPLBot(discord.Client):
         google_sheets = GoogleSheets(creds)
 
         #Change status
+        await self.edit(nick='ERPL Discord Bot')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='4 New Members'))
         print("Bot initialized")
     
@@ -39,7 +40,7 @@ class ERPLBot(discord.Client):
         async with member.typing():
             # Here we will just call the update_members function
             await self.update_members(member.guild)
-            # Duplicate 
+            # Add a welcome message/embed here
 
         # Message member on join with welcome message
         await member.send(f"Hello {member.name}, welcome to *ERPL*!\n Please read our rules on #rules-info & we hope you rocket to success with us. 🚀\n If you've paid dues, Please set your nick to the name you filled out in payment of dues.\n * @ERPLDiscordBot should do the rest. (if it doesn't work, complain in #join-boost-system )*\n This will get you access to project channels.")
@@ -59,11 +60,17 @@ class ERPLBot(discord.Client):
         if message.author == self.user:
             return
 
-        # Waterlubber easteregg
+        # WaterLubber easteregg
         if message.content == 'WaterLubber':
-            await message.channel.send('*Hello my name is Paul and I like to code!*')
-    
-    async def update_members(self, guild):
+            async with message.channel.typing():
+                await self.edit(nick='WaterLubber')
+                await message.channel.send('*Hello my name is Paul and I like to code!*')
+                await client.delete_message(message)
+                await self.edit(nick='ERPL Discord Bot')
+
+        if message.content contains.lower() 'waterlubber'
+            await client.delete_message(message)
+    async def update_members(self, guild)
         """
         Updates all members in the ERPL Discord by checking their names, roles, and the spreadsheet
         """
@@ -99,11 +106,12 @@ class ERPLBot(discord.Client):
                 # Check if their name is in the spreadsheet
                 if name == member.name:
                     #Check to see if they are not already rolled
-                    if (member.rolled==False) or (member.rolled=="'false"):
+                    if member.rolled is False:
 
                         # Create a DM channel if non-existent
                         if discord_member.dm_channel is None:
                             await discord_member.create_dm()
+
                         async with discord_member.typing():
                             # If it is, then we need to add the member role
                             member_role = guild.get_role(MEMBER_ROLE_ID)
