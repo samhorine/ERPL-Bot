@@ -6,6 +6,7 @@ We have a google sheet with all members who paid dues, first and last. We have a
 This bot will update a person's role in the discord server when they change their name to a name in the list (First last) then mark their name as taken on the spreadsheet.
 
 ### Further Discord Features:
-- [ ] On user join, send intro message. (explain rolling)
+- [x] On user join, send intro message. (explain rolling)
+- [x] On user made member, send message.
 - [ ] Automation of group roles by messaging to the bot (member wants to joing cardea chat, gets cardea role)
 - [ ] Add DECtalk tts (*John Madden*)
