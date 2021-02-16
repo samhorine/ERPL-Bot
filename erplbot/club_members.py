@@ -99,7 +99,7 @@ class ClubMember:
             # We should check if any field other than the last one is empty though
             if club_member.date is None:
                 # Then print an error message
-                print('Created member lacks values')
+                print(f'Created member {club_member.name} lacks values')
         
         # If we have reached the end, then return the new club member
         return club_member
@@ -145,5 +145,5 @@ def get_members_from_spreadsheet(google_sheets, sheetId, value_range):
         member = ClubMember.from_list(row, row= index+2 )
         # Append it
         members.append(member)
-    
+        
     return members
