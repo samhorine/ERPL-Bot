@@ -35,8 +35,12 @@ class ERPLBot(discord.Client):
         This function runs whenever a new member joins the server
         """
         print("Member joined")
+
         # Here we will just call the update_members function
         await self.update_members(member.guild)
+
+        # Message member on join
+        await member.dm_channel.send(f"Hello {member.name}, welcome to *ERPL*! Please read our rules on #rules-info & we hope you rocket to success with us. 🚀\n If you've paid dues, Please set your nick to the name you filled out in payment of dues. * @ERPLDiscordBot should do the rest. (if it doesn't work, complain in #join-boost-system )*\n This will get you access to project channels.")
     
     async def on_member_update(self, before, after):
         """
@@ -53,7 +57,7 @@ class ERPLBot(discord.Client):
         if message.author == self.user:
             return
 
-        if 'WaterLubber' in message.content:
+        if message.content is 'WaterLubber':
             await message.channel.send('Hello my name is Paul and I like to code!')
     
     async def update_members(self, guild):
@@ -90,22 +94,25 @@ class ERPLBot(discord.Client):
             for member in spreadsheet_members:
                 # Check if their name is in the spreadsheet
                 if name == member.name:
+                    #Check to see if they are already rolled
                     if (member.rolled==False):
                         # If it is, then we need to add the member role
                         member_role = guild.get_role(MEMBER_ROLE_ID)
                         await discord_member.add_roles(member_role, reason='Found user in club spreadsheet')
+
+                        # We also need to make sure they are marked as added in the spreadsheet
+                        member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, True)
+
                         # We also need to remove the recruit role
                         recruit_role = guild.get_role(RECRUIT_ROLE_ID)
                         await discord_member.remove_roles(recruit_role)
 
                         print(f'Added member role to {name}')
 
-                        # We also need to make sure they are marked as added in the spreadsheet
-                        member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, True)
-                    
+                        # Send a DM confirming the membership
+                        await member.dm_channel.send(f'Hello {name}, you have been given membership!')
                     else:
-                        print('Name Taken')
-                        #await message.channel.send('Error')
+                        print(f'Name Taken: {name}')
 def main():
     """
     Our "main" function
@@ -125,5 +132,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
