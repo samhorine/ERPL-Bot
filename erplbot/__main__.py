@@ -36,8 +36,8 @@ class ERPLBot(discord.Client):
         """
         print(f"{member.name} joined")
         # Give em' the default role
-        recruit_role = guild.get_role(RECRUIT_ROLE_ID)
-        await member.add_roles(member_role, reason='Member join')
+        recruit_role = member.guild.get_role(RECRUIT_ROLE_ID)
+        await member.add_roles(recruit_role, reason='Member join')
         # Create the DM by default
         await member.create_dm()
         async with member.typing():
@@ -46,7 +46,7 @@ class ERPLBot(discord.Client):
             # Add a welcome message/embed here
 
         # Message member on join with welcome message
-        await member.send(f"Hello {member.name}, welcome to *ERPL*!\n Please read our rules on #rules-info & we hope you rocket to success with us. 🚀\n If you've paid dues, Please set your nick to the name you filled out in payment of dues.\n * @ERPLDiscordBot should do the rest. (if it doesn't work, complain in #join-boost-system )*\n This will get you access to project channels.")
+        await member.send(f"Hello {member.name}, welcome to *ERPL*!\n Please read our rules on #rules-info & we hope you rocket to success with us. 🚀\n If you've paid dues, Please set your nick to the name you filled out in payment of dues.\n *@ERPLDiscordBot should do the rest. (if it doesn't work, complain in #join-boost-system )*\n This will get you access to project channels.")
     
     async def on_member_leave(self, discord_member):
         """
@@ -160,9 +160,9 @@ class ERPLBot(discord.Client):
                             print(f'Added member role to {name}')
 
                             # Send a DM confirming the membership
-                            async with message.channel.typing():
+                            async with discord_member.dm_channel.typing():
                                 await discord_member.send(f'Hello {name}, you have been given membership on the ERPL discord server!')
-                                await discord_member.send(f"Some reccomendations:\nMake the #announcements channel always alert you.\n Read the #rules, *there's useful info in there*.\nIf there's a project you want to join, you may want to unmute that chat too.\nFeel free to dm any of the project leads/officers with questions.")
+                                await discord_member.send(f"Some reccomendations:\nMake the #announcements channel always alert you.\nRead the #rules, *there's useful info in there*.\nIf there's a project you want to join, you may want to unmute that chat too.\nFeel free to dm any of the project leads/officers with questions.")
                                 await discord_member.send(f'We want to thank you {name}, your dues will help to propel the club and hopefully you will help us rocket to success!')
                     else:
                         print(f'Name Taken: {name}')
