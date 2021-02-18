@@ -27,7 +27,6 @@ class ERPLBot(discord.Client):
         google_sheets = GoogleSheets(creds)
 
         #Change status
-        await self.edit(nick='ERPL Discord Bot')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='4 New Members'))
         print("Bot initialized")
     
@@ -61,16 +60,17 @@ class ERPLBot(discord.Client):
             return
 
         # WaterLubber easteregg
-        if message.content == 'WaterLubber':
+        if message.content == 'Waterlubber':
             async with message.channel.typing():
-                await self.edit(nick='WaterLubber')
+                await message.guild.me.edit(nick='Waterlubber')
                 await message.channel.send('*Hello my name is Paul and I like to code!*')
-                await client.delete_message(message)
-                await self.edit(nick='ERPL Discord Bot')
+                await message.delete()
+                await message.guild.me.edit(nick='ERPL Discord Bot')
 
-        if message.content contains.lower() 'waterlubber'
-            await client.delete_message(message)
-    async def update_members(self, guild)
+        elif ('waterlubber' in message.content.lower()):
+            await message.delete()
+
+    async def update_members(self, guild):
         """
         Updates all members in the ERPL Discord by checking their names, roles, and the spreadsheet
         """
@@ -127,7 +127,10 @@ class ERPLBot(discord.Client):
                             print(f'Added member role to {name}')
 
                             # Send a DM confirming the membership
-                            await discord_member.send(f'Hello {name}, you have been given membership!')
+                            async with message.channel.typing():
+                                await discord_member.send(f'Hello {name}, you have been given membership on the ERPL discord server!')
+                                await discord_member.send(f"Some reccomendations:\nMake the #announcements channel always alert you.\n Read the #rules, *there's useful info in there*.\nIf there's a project you want to join, you may want to unmute that chat too.\nFeel free to dm any of the project leads/officers with questions.")
+                                await discord_member.send(f'We want to thank you {name}, your dues will help to propel the club and hopefully you will help us rocket to success!')
                     else:
                         print(f'Name Taken: {name}')
 def main():
