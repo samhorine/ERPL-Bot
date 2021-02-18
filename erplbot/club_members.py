@@ -124,7 +124,7 @@ class ClubMember:
             values = [ [ rolled ] ]
             # Set the value in the sheet finally
             google_sheets.set_values(sheetId, value_range, values)
-            print(f'Updated member {self.name} role value in spreadsheet to {new_value}. {value_range}')
+            print(f'Updated member {self.name} role value in spreadsheet to {rolled}. {value_range}')
             
 
 def get_members_from_spreadsheet(google_sheets, sheetId, value_range):

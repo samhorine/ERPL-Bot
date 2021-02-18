@@ -53,25 +53,25 @@ class ERPLBot(discord.Client):
         This function runs whenever a new member leaves the server
         """
         print(f"{discord_member.name} left")
-            # Here we will just call the update_members function
-            spreadsheet_members = get_members_from_spreadsheet(google_sheets, SPREADSHEET_ID, SHEET_NAME + ':'.join([RANGE_START, RANGE_END]))
-            # We need to check if they are in the spread
-            # First though, we need to get their name
-            name = None
+        # Here we will just call the update_members function
+        spreadsheet_members = get_members_from_spreadsheet(google_sheets, SPREADSHEET_ID, SHEET_NAME + ':'.join([RANGE_START, RANGE_END]))
+        # We need to check if they are in the spread
+        # First though, we need to get their name
+        name = None
 
-            # If this member has no nickname
-            if discord_member.nick is None:
-                name = Name.from_str(discord_member.name)
-            # If they do have a nickname
-            else:
-                name = Name.from_str(discord_member.nick)
+        # If this member has no nickname
+        if discord_member.nick is None:
+            name = Name.from_str(discord_member.name)
+        # If they do have a nickname
+        else:
+            name = Name.from_str(discord_member.nick)
 
-            # Iterate through each member in the spreadsheet (Ideally we would search the reverse of this list getting the most recent entries)
-            for member in spreadsheet_members:
-                # Check if their name is in the spreadsheet
-                if member.rolled is True:
-                    # Set them to false if they left as a member
-                    member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, False)
+        # Iterate through each member in the spreadsheet (Ideally we would search the reverse of this list getting the most recent entries)
+        for member in spreadsheet_members:
+            # Check if their name is in the spreadsheet
+            if member.rolled is True:
+                # Set them to false if they left as a member
+                member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, False)
 
     async def on_member_update(self, before, after):
         """
@@ -100,7 +100,7 @@ class ERPLBot(discord.Client):
 
             elif ('waterlubber' in message.content.lower()):
                 await message.delete()
-        except
+        except:
             print("An exception occurred during Waterlubber")
 
     async def update_members(self, guild):
