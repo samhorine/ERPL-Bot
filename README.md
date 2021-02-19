@@ -7,7 +7,7 @@ This bot will update a person's role in the discord server when they change thei
 
 ### Further Discord Features:
 - [x] On user join, send intro message. (explain rolling)
-- [ ] On user join, set role to 'recruit'.
+- [x] On user join, set role to 'recruit'.
 - [x] On user made member, send message.
-- [ ] Automation of group roles by messaging to the bot (member wants to joing cardea chat, gets cardea role)
+- [ ] Automation of group roles by messaging to the bot (member wants to join cardea chat, gets cardea role)
 - [ ] Add DECtalk tts (*John Madden*)

@@ -2,12 +2,12 @@ import discord
 import pickle
 from erplbot.club_members import get_members_from_spreadsheet, Name
 from erplbot.sheets import GoogleSheets, retrieve_credentials
-#try to get variables from pickled config
+# Try to get variables from pickled config
 try:
-  print('Loading Config')
-  [BOT_TOKEN, SPREADSHEET_ID, SHEET_NAME, RANGE_START, RANGE_END, MEMBER_ROLE_ID, RECRUIT_ROLE_ID] = pickle.load(open ("config.bin", "rb"))
+    print('Loading Config')
+    [BOT_TOKEN, SPREADSHEET_ID, SHEET_NAME, RANGE_START, RANGE_END, MEMBER_ROLE_ID, RECRUIT_ROLE_ID] = pickle.load(open ("config.bin", "rb"))
 except:
-  print("An exception occurred while loading config.bin")
+    print("An exception occurred while loading config.bin")
 # This variable will store our GoogleSheets instance
 google_sheets = None
 # This one will store our Google API credentials
@@ -55,7 +55,7 @@ class ERPLBot(discord.Client):
         print(f"{discord_member.name} left")
         # Here we will just call the update_members function
         spreadsheet_members = get_members_from_spreadsheet(google_sheets, SPREADSHEET_ID, SHEET_NAME + ':'.join([RANGE_START, RANGE_END]))
-        # We need to check if they are in the spread
+        # We need to check if they are in the sheet
         # First though, we need to get their name
         name = None
 
@@ -183,5 +183,6 @@ def main():
     # Connects to Discord and runs our bot with the bot's token
     client = ERPLBot(intents=intents)
     client.run(BOT_TOKEN)
+
 if __name__ == "__main__":
     main()
