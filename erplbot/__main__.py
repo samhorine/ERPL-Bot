@@ -1,4 +1,3 @@
-import sys
 import discord
 import pickle
 from erplbot.club_members import get_members_from_spreadsheet, Name
@@ -13,8 +12,6 @@ except:
 google_sheets = None
 # This one will store our Google API credentials
 creds = None
-# This will store 
-resetMember = sys.argv.lower().contains('resetmember')
 
 class ERPLBot(discord.Client):
     """
@@ -33,7 +30,7 @@ class ERPLBot(discord.Client):
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='4 New Members'))
         print("Bot initialized")
     
-    async def on_member_join(self, member,resetMember):
+    async def on_member_join(self, member):
         """
         This function runs whenever a new member joins the server
         """
@@ -45,7 +42,7 @@ class ERPLBot(discord.Client):
         await member.create_dm()
         async with member.typing():
             # Here we will just call the update_members function
-            await self.update_members(member.guild,resetMember)
+            await self.update_members(member.guild)
             # Add a welcome message/embed here
 
         # Message member on join with welcome message
@@ -76,13 +73,13 @@ class ERPLBot(discord.Client):
                 # Set them to false if they left as a member
                 member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, False)
 
-    async def on_member_update(self, before, after,resetMember):
+    async def on_member_update(self, before, after):
         """
         This function runs whenever a new member updates their own profile, like changing their nickname
         """
         print(f"{before.name} updated")
         # Here we will just call the update_members function
-        await self.update_members(before.guild,resetMember)
+        await self.update_members(before.guild)
     
     async def on_message(self, message):
         """
@@ -106,7 +103,7 @@ class ERPLBot(discord.Client):
         except:
             print("An exception occurred during Waterlubber")
 
-    async def update_members(self, guild,resetMember):
+    async def update_members(self, guild):
         """
         Updates all members in the ERPL Discord by checking their names, roles, and the spreadsheet
         """
@@ -119,81 +116,57 @@ class ERPLBot(discord.Client):
 
         # Loop through each member in the Discord
         for discord_member in discord_members:
-            if resetMember:
-                name = None
+            # Let's check if it is even worth our time to check if they are in the spreadsheet
+            # We will check if they already have the member role
+            if MEMBER_ROLE_ID in list(map(lambda role: role.id, discord_member.roles)):
+                # Then just skip over them
+                continue
+            
+            # If they don't have the role, we need to check if they are in the spreadsheet
+            # First though, we need to get their name
+            name = None
 
-                # If this member has no nickname
-                if discord_member.nick is None:
-                    name = Name.from_str(discord_member.name)
+            # If this member has no nickname
+            if discord_member.nick is None:
+                name = Name.from_str(discord_member.name)
 
-                # If they do have a nickname
-                else:
-                    name = Name.from_str(discord_member.nick)
-                # Iterate through each member in the spreadsheet (Ideally we would search the reverse of this list getting the most recent entries)
-                for member in spreadsheet_members:
-                    if name == member.name:
-                        if member.rolled is True:
-
-                            # Move everyone to no longer rolled
-                            member_role = guild.get_role(MEMBER_ROLE_ID)
-                            await discord_member.remove_roles(member_role)
-                            recruit_role = guild.get_role(RECRUIT_ROLE_ID)
-                            await discord_member.add_roles(RECRUIT_ROLE_ID, reason='Member Reset')
-                            
-                        # Set all members to not rolled on sheet
-                        member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, False)
+            # If they do have a nickname
             else:
-                # Let's check if it is even worth our time to check if they are in the spreadsheet
-                # We will check if they already have the member role
-                if MEMBER_ROLE_ID in list(map(lambda role: role.id, discord_member.roles)):
-                    # Then just skip over them
-                    continue
-                
-                # If they don't have the role, we need to check if they are in the spreadsheet
-                # First though, we need to get their name
-                name = None
+                name = Name.from_str(discord_member.nick)
 
-                # If this member has no nickname
-                if discord_member.nick is None:
-                    name = Name.from_str(discord_member.name)
+            # Iterate through each member in the spreadsheet (Ideally we would search the reverse of this list getting the most recent entries)
+            for member in spreadsheet_members:
+                # Check if their name is in the spreadsheet
+                if name == member.name:
+                    #Check to see if they are not already rolled
+                    if member.rolled is False:
 
-                # If they do have a nickname
-                else:
-                    name = Name.from_str(discord_member.nick)
+                        # Create a DM channel if non-existent
+                        if discord_member.dm_channel is None:
+                            await discord_member.create_dm()
 
-                # Iterate through each member in the spreadsheet (Ideally we would search the reverse of this list getting the most recent entries)
-                for member in spreadsheet_members:
-                    # Check if their name is in the spreadsheet
-                    if name == member.name:
-                        #Check to see if they are not already rolled
-                        if member.rolled is False:
+                        async with discord_member.typing():
+                            # If it is, then we need to add the member role
+                            member_role = guild.get_role(MEMBER_ROLE_ID)
+                            await discord_member.add_roles(member_role, reason='Found user in club spreadsheet')
 
-                            # Create a DM channel if non-existent
-                            if discord_member.dm_channel is None:
-                                await discord_member.create_dm()
+                            # We also need to make sure they are marked as added in the spreadsheet
+                            member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, True)
 
-                            async with discord_member.typing():
-                                # If it is, then we need to add the member role
-                                member_role = guild.get_role(MEMBER_ROLE_ID)
-                                await discord_member.add_roles(member_role, reason='Found user in club spreadsheet')
+                            # We also need to remove the recruit role
+                            recruit_role = guild.get_role(RECRUIT_ROLE_ID)
+                            await discord_member.remove_roles(recruit_role)
 
-                                # We also need to make sure they are marked as added in the spreadsheet
-                                member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, True)
-
-                                # We also need to remove the recruit role
-                                recruit_role = guild.get_role(RECRUIT_ROLE_ID)
-                                await discord_member.remove_roles(recruit_role)
-
-                                print(f'Added member role to {name}')
+                            print(f'Added member role to {name}')
 
 
-                            # Send a DM confirming the membership
-                            async with discord_member.dm_channel.typing():
-                                await discord_member.send(f'Hello {name}, you have been given membership on the ERPL discord server!')
-                                await discord_member.send(f"Some reccomendations:\nMake the #announcements channel always alert you.\nRead the #rules, *there's useful info in there*.\nIf there's a project you want to join, you may want to unmute that chat too.\nFeel free to dm any of the project leads/officers with questions.")
-                                await discord_member.send(f'We want to thank you {name}, your dues will help to propel the club and hopefully you will help us rocket to success!')
-                        else:
-                            print(f'Name Taken: {name}')
+                        # Send a DM confirming the membership
+                        async with discord_member.dm_channel.typing():
+                            await discord_member.send(f'Hello {name}, you have been given membership on the ERPL discord server!')
+                            await discord_member.send(f"Some reccomendations:\nMake the #announcements channel always alert you.\nRead the #rules, *there's useful info in there*.\nIf there's a project you want to join, you may want to unmute that chat too.\nFeel free to dm any of the project leads/officers with questions.")
+                            await discord_member.send(f'We want to thank you {name}, your dues will help to propel the club and hopefully you will help us rocket to success!')
+                    else:
+                        print(f'Name Taken: {name}')
 def main():
     """
     Our "main" function
