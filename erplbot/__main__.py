@@ -6,8 +6,8 @@ from erplbot.sheets import GoogleSheets, retrieve_credentials
 try:
     print('Loading Config')
     [BOT_TOKEN, SPREADSHEET_ID, SHEET_NAME, RANGE_START, RANGE_END, MEMBER_ROLE_ID, RECRUIT_ROLE_ID] = pickle.load(open ("config.bin", "rb"))
-except:
-    print("An exception occurred while loading config.bin")
+except Exception as e:
+    print(f"An exception occurred while loading config.bin\n{e}")
 # This variable will store our GoogleSheets instance
 google_sheets = None
 # This one will store our Google API credentials
@@ -53,30 +53,20 @@ class ERPLBot(discord.Client):
         This function runs whenever a new member leaves the server
         """
         print(f"{discord_member.name} left")
-        # Here we will just call the update_members function
-        spreadsheet_members = get_members_from_spreadsheet(google_sheets, SPREADSHEET_ID, SHEET_NAME + ':'.join([RANGE_START, RANGE_END]))
-        # We need to check if they are in the sheet
-        # First though, we need to get their name
-        name = None
-
-        # If this member has no nickname
-        if discord_member.nick is None:
-            name = Name.from_str(discord_member.name)
-        # If they do have a nickname
-        else:
-            name = Name.from_str(discord_member.nick)
-
-        # Iterate through each member in the spreadsheet (Ideally we would search the reverse of this list getting the most recent entries)
-        for member in spreadsheet_members:
-            # Check if their name is in the spreadsheet
-            if member.rolled:
-                # Set them to false if they left as a member
-                member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, False)
+        # Try to set them to false if they left as a member
+        try:
+            discord_member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, False)
+        except Exception as e:
+                print(f"{discord_member.name} leaving raised an exception\n{e}")
 
     async def on_member_update(self, before, after):
         """
         This function runs whenever a new member updates their own profile, like changing their nickname
         """
+        # Ignore our own updates
+        if after == self.user:
+            return
+
         print(f"{before.name} updated")
         # Here we will just call the update_members function
         await self.update_members(before.guild)
@@ -145,7 +135,7 @@ class ERPLBot(discord.Client):
                         if discord_member.dm_channel is None:
                             await discord_member.create_dm()
 
-                        async with discord_member.typing():
+                        async with discord_member.dm_channel.typing():
                             # If it is, then we need to add the member role
                             member_role = guild.get_role(MEMBER_ROLE_ID)
                             await discord_member.add_roles(member_role, reason='Found user in club spreadsheet')
@@ -159,9 +149,7 @@ class ERPLBot(discord.Client):
 
                             print(f'Added member role to {name}')
 
-
-                        # Send a DM confirming the membership
-                        async with discord_member.dm_channel.typing():
+                            # Send a DM confirming the membership
                             await discord_member.send(f'Hello {name}, you have been given membership on the ERPL discord server!')
                             await discord_member.send(f"Some reccomendations:\nMake the #announcements channel always alert you.\nRead the #rules, *there's useful info in there*.\nIf there's a project you want to join, you may want to unmute that chat too.\nFeel free to dm any of the project leads/officers with questions.")
                             await discord_member.send(f'We want to thank you {name}, your dues will help to propel the club and hopefully you will help us rocket to success!')
