@@ -58,7 +58,7 @@ class ERPLBot(discord.Client):
             discord_member.update_rolled(google_sheets, SPREADSHEET_ID, SHEET_NAME, RANGE_END, False)
         except Exception as e:
                 print(f"{discord_member.name} leaving raised an exception\n{e}")
-
+            
     async def on_member_update(self, before, after):
         """
         This function runs whenever a new member updates their own profile, like changing their nickname
@@ -92,7 +92,7 @@ class ERPLBot(discord.Client):
                 await message.delete()
         except:
             print("An exception occurred during Waterlubber")
-
+            
     async def update_members(self, guild):
         """
         Updates all members in the ERPL Discord by checking their names, roles, and the spreadsheet
@@ -155,6 +155,7 @@ class ERPLBot(discord.Client):
                             await discord_member.send(f'We want to thank you {name}, your dues will help to propel the club and hopefully you will help us rocket to success!')
                     else:
                         print(f'Name Taken: {name}')
+
 def main():
     """
     Our "main" function
