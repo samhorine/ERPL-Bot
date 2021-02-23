@@ -89,9 +89,9 @@ class ClubMember:
             # Create a new name object
             club_member.name = Name(first=first_name,last=last_name)
             rolled_str = next(list_iter)
-            
-            # Sets club_member.rolled bool
-            club_member.rolled = rolled_str.lower() == rolled_str
+
+            # Sets club_member.rolled bool... (in because sheets is cursed and has 'true & TRUE)
+            club_member.rolled = 'true' in rolled_str.lower()
 
         # If we reached the end of the list before we were meant to
         except StopIteration:
@@ -99,7 +99,7 @@ class ClubMember:
             # We should check if any field other than the last one is empty though
             if club_member.date is None:
                 # Then print an error message
-                print('Created member lacks values')
+                print(f'Created member {club_member.name} lacks values')
         
         # If we have reached the end, then return the new club member
         return club_member
@@ -118,22 +118,13 @@ class ClubMember:
             print(f'Tried to update member {self.name} in spreadsheet, but member has no valid row.')
         else:
             # If it does have a valid row
-            
-            #Check to see if the member already has a role before setting one
-            if not self.rolled == 'true' or self.rolled == "'true":
-            
-                # This 'range' is just one single cell that represents if this member is in the server or not
-                value_range = f'{sheet_name}{col}{self.row}:{col}{self.row}'
-                # The new value should be a stringr
-                new_value = 'true' if rolled else 'false'
-                # We need to do this because this is one row, and one column
-                values = [ [ new_value ] ]
-                # Set the value in the sheet finally
-                google_sheets.set_values(sheetId, value_range, values)
-                print(f'Updated member {self.name} role value in spreadsheet to {new_value}. {value_range}')
-            #else:
-            #Member already has a role set
-            
+            # This 'range' is just one single cell that represents if this member is in the server or not
+            value_range = f'{sheet_name}{col}{self.row}:{col}{self.row}'
+            # We need to do this because this is one row, and one column
+            values = [ [ rolled ] ]
+            # Set the value in the sheet finally
+            google_sheets.set_values(sheetId, value_range, values)
+            print(f'Updated member {self.name} role value in spreadsheet to {rolled}. {value_range}')            
 
 def get_members_from_spreadsheet(google_sheets, sheetId, value_range):
     """
@@ -151,5 +142,5 @@ def get_members_from_spreadsheet(google_sheets, sheetId, value_range):
         member = ClubMember.from_list(row, row= index+2 )
         # Append it
         members.append(member)
-    
+        
     return members
